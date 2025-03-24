@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 type UserType = "student" | "admin";
 
 const Auth = () => {
-  const [isSignIn, setIsSignIn] = useState(true);
+  const [activeTab, setActiveTab] = useState<"sign-in" | "sign-up">("sign-in");
   const [userType, setUserType] = useState<UserType>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -46,7 +46,7 @@ const Auth = () => {
 
     // Mock authentication - in a real app, this would connect to a backend
     toast({
-      title: isSignIn ? "Signed In Successfully" : "Signed Up Successfully",
+      title: activeTab === "sign-in" ? "Signed In Successfully" : "Signed Up Successfully",
       description: `Welcome as a ${userType}!`,
     });
     
@@ -63,22 +63,12 @@ const Auth = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <Tabs defaultValue={isSignIn ? "sign-in" : "sign-up"} className="w-full">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "sign-in" | "sign-up")} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger 
-                value="sign-in" 
-                onClick={() => setIsSignIn(true)}
-              >
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger 
-                value="sign-up" 
-                onClick={() => setIsSignIn(false)}
-              >
-                Sign Up
-              </TabsTrigger>
+              <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+              <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
             </TabsList>
-
+            
             <div className="mb-6">
               <div className="text-sm font-medium mb-2">I am a:</div>
               <div className="grid grid-cols-2 gap-4">
@@ -99,9 +89,14 @@ const Auth = () => {
                   Admin
                 </Button>
               </div>
+              <div className="mt-2 text-xs text-gray-500">
+                {userType === "student" ? 
+                  "Student emails must end with @kgkite.ac.in" : 
+                  "Admin emails must end with @kgisl.ac.in"}
+              </div>
             </div>
 
-            <TabsContent value="sign-in">
+            <TabsContent value="sign-in" className="mt-0">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -138,7 +133,7 @@ const Auth = () => {
               </form>
             </TabsContent>
 
-            <TabsContent value="sign-up">
+            <TabsContent value="sign-up" className="mt-0">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
