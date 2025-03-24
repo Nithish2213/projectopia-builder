@@ -26,11 +26,26 @@ const Categories = () => {
     navigate(`/?category=${category}`);
   };
 
+  const handleAllCategories = () => {
+    navigate("/");
+  };
+
   return (
     <div className="w-full bg-gray-50 py-3 border-b border-gray-200">
       <div className="container px-4 mx-auto">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex space-x-2">
+            <Button
+              variant={!activeCategory ? "default" : "outline"}
+              className={`rounded-full text-sm ${
+                !activeCategory 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  : "bg-white hover:bg-blue-50 hover:text-blue-600"
+              }`}
+              onClick={handleAllCategories}
+            >
+              All
+            </Button>
             {categories.map((category) => (
               <Button
                 key={category.id}

@@ -1,11 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useNotifications } from "@/context/NotificationsContext";
 
 interface Message {
   id: number;
@@ -43,6 +44,16 @@ const Chat = () => {
       timestamp: '10:38 AM'
     }
   ]);
+  const { addNotification } = useNotifications();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (message.trim() === "") return;
@@ -57,6 +68,13 @@ const Chat = () => {
     setMessages([...messages, newMessage]);
     setMessage("");
     
+    // Add a notification for the new message
+    addNotification({
+      title: "New message sent",
+      message: `You sent a message about MacBook Air`,
+      date: "Just now",
+    });
+    
     // Mock seller response after a short delay
     setTimeout(() => {
       const sellerResponse = {
@@ -66,6 +84,13 @@ const Chat = () => {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, sellerResponse]);
+      
+      // Add a notification for the response
+      addNotification({
+        title: "New message received",
+        message: `Alex Johnson has replied to your message`,
+        date: "Just now",
+      });
     }, 1000);
   };
 
@@ -124,6 +149,7 @@ const Chat = () => {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           
           <div className="border-t p-3">
@@ -138,7 +164,8 @@ const Chat = () => {
               <Button 
                 onClick={handleSendMessage} 
                 size="icon" 
-                className="ml-2"
+                className="ml-2 bg-blue-600 hover:bg-blue-700"
+                disabled={message.trim() === ""}
               >
                 <Send className="h-4 w-4" />
               </Button>

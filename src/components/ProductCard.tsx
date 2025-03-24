@@ -6,6 +6,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/context/NotificationsContext";
 
 interface ProductCardProps {
   id: number;
@@ -26,6 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
   const favorite = isFavorite(id);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -44,12 +46,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
         title: "Added to favorites",
         description: `${title} has been added to your favorites.`,
       });
+      
+      // Add notification when item is added to favorites
+      addNotification({
+        title: "Added to favorites",
+        message: `You've added ${title} to your favorites.`,
+        date: "Just now",
+      });
     }
   };
 
   return (
     <Link to={`/product/${id}`}>
-      <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      <Card className="overflow-hidden hover:shadow-md transition-shadow h-full">
         <div className="relative">
           <AspectRatio ratio={4/3}>
             <img
@@ -59,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             />
           </AspectRatio>
           <button 
-            className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white"
+            className={`absolute top-2 right-2 p-1.5 rounded-full ${favorite ? 'bg-red-50' : 'bg-white/80'} hover:bg-white`}
             onClick={handleFavoriteClick}
           >
             <Heart 

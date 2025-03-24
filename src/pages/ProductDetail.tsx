@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, MessageSquare, Share, Link as LinkIcon, Copy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/context/NotificationsContext";
 
 // This would normally come from an API
 const productDetails = {
@@ -52,6 +53,7 @@ const ProductDetail = () => {
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { addNotification } = useNotifications();
   
   // In a real app, you'd fetch the product data based on the ID
   const product = productDetails;
@@ -69,6 +71,13 @@ const ProductDetail = () => {
       toast({
         title: "Added to favorites",
         description: `${product.title} has been added to your favorites.`,
+      });
+      
+      // Add a notification when a product is added to favorites
+      addNotification({
+        title: "Added to favorites",
+        message: `You've added ${product.title} to your favorites.`,
+        date: "Just now",
       });
     }
   };
@@ -95,19 +104,37 @@ const ProductDetail = () => {
     {
       name: "WhatsApp",
       icon: <LinkIcon className="h-5 w-5" />,
-      action: () => window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`),
+      action: () => {
+        window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`);
+        toast({
+          title: "Sharing on WhatsApp",
+          description: "Opening WhatsApp share...",
+        });
+      },
       color: "bg-green-500 text-white"
     },
     {
       name: "Facebook",
       icon: <LinkIcon className="h-5 w-5" />,
-      action: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`),
+      action: () => {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`);
+        toast({
+          title: "Sharing on Facebook",
+          description: "Opening Facebook share...",
+        });
+      },
       color: "bg-blue-600 text-white"
     },
     {
       name: "Twitter",
       icon: <LinkIcon className="h-5 w-5" />,
-      action: () => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.title)}`),
+      action: () => {
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.title)}`);
+        toast({
+          title: "Sharing on Twitter",
+          description: "Opening Twitter share...",
+        });
+      },
       color: "bg-blue-400 text-white"
     },
   ];
@@ -127,7 +154,7 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden">
+            <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden bg-gray-100">
               <img 
                 src={product.images[activeImage]} 
                 alt={product.title} 
@@ -169,13 +196,17 @@ const ProductDetail = () => {
               <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
                 Buy Now
               </Button>
-              <Button variant="outline" className="flex items-center" onClick={handleChatClick}>
+              <Button 
+                variant="outline" 
+                className="flex items-center" 
+                onClick={handleChatClick}
+              >
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Chat
               </Button>
               <Button 
                 variant="outline" 
-                className="w-10 p-0"
+                className={`w-10 p-0 ${favorite ? 'text-red-500 border-red-500 hover:bg-red-50' : ''}`}
                 onClick={handleFavoriteClick}
               >
                 <Heart className={`h-5 w-5 ${favorite ? 'text-red-500 fill-red-500' : ''}`} />
@@ -200,9 +231,7 @@ const ProductDetail = () => {
                       <button
                         key={index}
                         className={`flex items-center justify-center space-x-2 p-3 rounded-md ${option.color} hover:opacity-90 transition-opacity`}
-                        onClick={() => {
-                          option.action();
-                        }}
+                        onClick={option.action}
                       >
                         {option.icon}
                         <span>{option.name}</span>

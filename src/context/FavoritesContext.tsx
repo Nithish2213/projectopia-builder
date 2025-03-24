@@ -21,7 +21,9 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [favorites]);
 
   const addToFavorites = (id: number) => {
-    setFavorites((prev) => [...prev, id]);
+    if (!favorites.includes(id)) {
+      setFavorites((prev) => [...prev, id]);
+    }
   };
 
   const removeFromFavorites = (id: number) => {
