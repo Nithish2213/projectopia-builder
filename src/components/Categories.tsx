@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,14 @@ const categories = [
 ];
 
 const Categories = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activeCategory = searchParams.get("category");
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/?category=${category}`);
+  };
+
   return (
     <div className="w-full bg-gray-50 py-3 border-b border-gray-200">
       <div className="container px-4 mx-auto">
@@ -25,8 +34,13 @@ const Categories = () => {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant="outline"
-                className="rounded-full text-sm bg-white hover:bg-blue-50 hover:text-blue-600"
+                variant={activeCategory === category.name ? "default" : "outline"}
+                className={`rounded-full text-sm ${
+                  activeCategory === category.name 
+                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                    : "bg-white hover:bg-blue-50 hover:text-blue-600"
+                }`}
+                onClick={() => handleCategoryClick(category.name)}
               >
                 {category.name}
               </Button>

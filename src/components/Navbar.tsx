@@ -4,8 +4,14 @@ import { Link } from "react-router-dom";
 import { Bell, Heart, User, Search, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useFavorites } from "@/context/FavoritesContext";
+import { useNotifications } from "@/context/NotificationsContext";
 
 const Navbar = () => {
+  const { favorites } = useFavorites();
+  const { unreadCount } = useNotifications();
+
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
@@ -28,11 +34,21 @@ const Navbar = () => {
 
         {/* Action Icons */}
         <div className="flex items-center space-x-4">
-          <Link to="/notifications" className="text-gray-600 hover:text-blue-600">
+          <Link to="/notifications" className="text-gray-600 hover:text-blue-600 relative">
             <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                {unreadCount}
+              </Badge>
+            )}
           </Link>
-          <Link to="/favorites" className="text-gray-600 hover:text-blue-600">
+          <Link to="/favorites" className="text-gray-600 hover:text-blue-600 relative">
             <Heart className="h-5 w-5" />
+            {favorites.length > 0 && (
+              <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                {favorites.length}
+              </Badge>
+            )}
           </Link>
           <Link to="/sell" className="hidden sm:flex">
             <Button className="bg-blue-600 hover:bg-blue-700">

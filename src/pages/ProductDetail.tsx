@@ -1,10 +1,20 @@
 
-import React from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Heart, MessageSquare, Share } from "lucide-react";
+import React, { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Heart, MessageSquare, Share, Link as LinkIcon, Copy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useFavorites } from "@/context/FavoritesContext";
+import { useToast } from "@/hooks/use-toast";
 
 // This would normally come from an API
 const productDetails = {
@@ -29,11 +39,78 @@ const productDetails = {
   }
 };
 
+type ShareOption = {
+  name: string;
+  icon: React.ReactNode;
+  action: () => void;
+  color: string;
+};
+
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [activeImage, setActiveImage] = useState(0);
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   // In a real app, you'd fetch the product data based on the ID
   const product = productDetails;
+  const favorite = isFavorite(Number(id));
+
+  const handleFavoriteClick = () => {
+    if (favorite) {
+      removeFromFavorites(Number(id));
+      toast({
+        title: "Removed from favorites",
+        description: `${product.title} has been removed from your favorites.`,
+      });
+    } else {
+      addToFavorites(Number(id));
+      toast({
+        title: "Added to favorites",
+        description: `${product.title} has been added to your favorites.`,
+      });
+    }
+  };
+
+  const handleChatClick = () => {
+    navigate(`/chat/${id}`);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link copied!",
+      description: "Product link copied to clipboard.",
+    });
+  };
+
+  const shareOptions: ShareOption[] = [
+    {
+      name: "Copy Link",
+      icon: <Copy className="h-5 w-5" />,
+      action: handleCopyLink,
+      color: "bg-gray-100 text-gray-800"
+    },
+    {
+      name: "WhatsApp",
+      icon: <LinkIcon className="h-5 w-5" />,
+      action: () => window.open(`https://wa.me/?text=${encodeURIComponent(window.location.href)}`),
+      color: "bg-green-500 text-white"
+    },
+    {
+      name: "Facebook",
+      icon: <LinkIcon className="h-5 w-5" />,
+      action: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`),
+      color: "bg-blue-600 text-white"
+    },
+    {
+      name: "Twitter",
+      icon: <LinkIcon className="h-5 w-5" />,
+      action: () => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.title)}`),
+      color: "bg-blue-400 text-white"
+    },
+  ];
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -52,14 +129,20 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden">
               <img 
-                src={product.images[0]} 
+                src={product.images[activeImage]} 
                 alt={product.title} 
                 className="object-cover w-full h-full"
               />
             </div>
             <div className="grid grid-cols-4 gap-2">
               {product.images.map((image, index) => (
-                <div key={index} className="aspect-w-1 aspect-h-1 rounded-md overflow-hidden">
+                <div 
+                  key={index} 
+                  className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden border-2 ${
+                    activeImage === index ? 'border-blue-600' : 'border-transparent'
+                  }`}
+                  onClick={() => setActiveImage(index)}
+                >
                   <img 
                     src={image} 
                     alt={`${product.title} ${index + 1}`}
@@ -86,16 +169,48 @@ const ProductDetail = () => {
               <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
                 Buy Now
               </Button>
-              <Button variant="outline" className="flex items-center">
+              <Button variant="outline" className="flex items-center" onClick={handleChatClick}>
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Chat
               </Button>
-              <Button variant="outline" className="w-10 p-0">
-                <Heart className="h-5 w-5" />
+              <Button 
+                variant="outline" 
+                className="w-10 p-0"
+                onClick={handleFavoriteClick}
+              >
+                <Heart className={`h-5 w-5 ${favorite ? 'text-red-500 fill-red-500' : ''}`} />
               </Button>
-              <Button variant="outline" className="w-10 p-0">
-                <Share className="h-5 w-5" />
-              </Button>
+              
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-10 p-0">
+                    <Share className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Share this listing</DialogTitle>
+                    <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Close</span>
+                    </DialogClose>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-4 py-4">
+                    {shareOptions.map((option, index) => (
+                      <button
+                        key={index}
+                        className={`flex items-center justify-center space-x-2 p-3 rounded-md ${option.color} hover:opacity-90 transition-opacity`}
+                        onClick={() => {
+                          option.action();
+                        }}
+                      >
+                        {option.icon}
+                        <span>{option.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
             
             <div className="border-t border-b py-4 space-y-3">
@@ -126,9 +241,11 @@ const ProductDetail = () => {
                   <p className="text-sm text-gray-500">{product.seller.joinedDate}</p>
                 </div>
               </div>
-              <Button variant="outline" className="w-full mt-4">
-                View Profile
-              </Button>
+              <Link to={`/profile/${product.seller.id}`}>
+                <Button variant="outline" className="w-full mt-4">
+                  View Profile
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
