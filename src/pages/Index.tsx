@@ -1,10 +1,10 @@
-
 import React, { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Categories from "@/components/Categories";
 import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
 
 // Mock data for trending products
 const trendingProducts = [

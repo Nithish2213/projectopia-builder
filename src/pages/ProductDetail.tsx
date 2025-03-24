@@ -78,6 +78,7 @@ const ProductDetail = () => {
         title: "Added to favorites",
         message: `You've added ${product.title} to your favorites.`,
         date: "Just now",
+        type: "system" // Adding the required type property
       });
     }
   };

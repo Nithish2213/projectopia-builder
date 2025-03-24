@@ -52,6 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         title: "Added to favorites",
         message: `You've added ${title} to your favorites.`,
         date: "Just now",
+        type: "system" // Adding the required type property
       });
     }
   };

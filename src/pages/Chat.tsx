@@ -73,6 +73,7 @@ const Chat = () => {
       title: "New message sent",
       message: `You sent a message about MacBook Air`,
       date: "Just now",
+      type: "update" // Adding the required type property
     });
     
     // Mock seller response after a short delay
@@ -90,6 +91,7 @@ const Chat = () => {
         title: "New message received",
         message: `Alex Johnson has replied to your message`,
         date: "Just now",
+        type: "update" // Adding the required type property
       });
     }, 1000);
   };
