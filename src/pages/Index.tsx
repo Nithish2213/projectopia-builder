@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+
+import React, { useMemo, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Categories from "@/components/Categories";
@@ -6,8 +7,19 @@ import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
+// Interface for product data
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  location: string;
+  date: string;
+  category: string;
+}
+
 // Mock data for trending products
-const trendingProducts = [
+const trendingProductsData = [
   {
     id: 1,
     title: "MacBook Air M1 (2020)",
@@ -46,8 +58,8 @@ const trendingProducts = [
   },
 ];
 
-// Mock data for recent products
-const recentProducts = [
+// Mock data for initial recent products
+const initialRecentProducts = [
   {
     id: 5,
     title: "Microwave (Like New)",
@@ -125,16 +137,32 @@ const recentProducts = [
 const Index = () => {
   const [searchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
+  const [trendingProducts, setTrendingProducts] = useState(trendingProductsData);
+  const [recentProducts, setRecentProducts] = useState(initialRecentProducts);
+
+  // Load any newly listed items from localStorage
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('recentProducts');
+    if (storedProducts) {
+      const parsedProducts = JSON.parse(storedProducts);
+      // Combine newly listed products with initial recent products
+      // Avoid duplicates by checking IDs
+      const existingIds = new Set(initialRecentProducts.map(p => p.id));
+      const newProducts = parsedProducts.filter((p: Product) => !existingIds.has(p.id));
+      
+      setRecentProducts([...newProducts, ...initialRecentProducts]);
+    }
+  }, []);
 
   const filteredTrendingProducts = useMemo(() => {
     if (!selectedCategory) return trendingProducts;
     return trendingProducts.filter(product => product.category === selectedCategory);
-  }, [selectedCategory]);
+  }, [selectedCategory, trendingProducts]);
 
   const filteredRecentProducts = useMemo(() => {
     if (!selectedCategory) return recentProducts;
     return recentProducts.filter(product => product.category === selectedCategory);
-  }, [selectedCategory]);
+  }, [selectedCategory, recentProducts]);
 
   return (
     <div className="min-h-screen flex flex-col">

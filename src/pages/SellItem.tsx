@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { 
@@ -13,6 +13,7 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -29,7 +30,23 @@ const categories = [
   "Event Tickets",
 ];
 
+// Create a new product ID (normally this would be handled by the backend)
+const generateProductId = () => {
+  return Math.floor(1000 + Math.random() * 9000);
+};
+
+// Get the current date in a readable format
+const getCurrentDate = () => {
+  return "Just now";
+};
+
 const SellItem = () => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
   const form = useForm({
     defaultValues: {
       title: "",
@@ -41,10 +58,60 @@ const SellItem = () => {
     },
   });
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const files = Array.from(event.target.files);
+      setSelectedFiles(files);
+      
+      // Create a preview for the first image
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        if (e.target) {
+          setImagePreview(e.target.result as string);
+        }
+      };
+      fileReader.readAsDataURL(files[0]);
+      
+      toast({
+        title: "Files Selected",
+        description: `${files.length} file(s) have been selected.`,
+      });
+    }
+  };
+
+  const handleBrowseClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   const onSubmit = (data: any) => {
-    console.log(data);
-    // In a real app, you would submit this data to your backend
-    alert("Item submitted successfully!");
+    // Create a new product object
+    const newProduct = {
+      id: generateProductId(),
+      title: data.title,
+      price: parseFloat(data.price),
+      image: imagePreview || "https://images.unsplash.com/photo-1615212139852-a08fe8c5ebcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+      location: data.location,
+      date: getCurrentDate(),
+      category: data.category,
+      description: data.description,
+      condition: data.condition
+    };
+
+    // In a real application, we would save this to a database
+    // For now, let's simulate this by storing in localStorage
+    const recentProducts = JSON.parse(localStorage.getItem('recentProducts') || '[]');
+    recentProducts.unshift(newProduct); // Add to the beginning of the array
+    localStorage.setItem('recentProducts', JSON.stringify(recentProducts));
+
+    toast({
+      title: "Item Listed Successfully",
+      description: "Your item has been listed for sale and will appear on the home page.",
+    });
+
+    // Navigate back to home page
+    navigate('/');
   };
 
   return (
@@ -66,11 +133,38 @@ const SellItem = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Image Upload */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                {imagePreview ? (
+                  <div className="mb-4">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="mx-auto max-h-40 object-contain" 
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      {selectedFiles.length} file(s) selected
+                    </p>
+                  </div>
+                ) : (
+                  <Upload className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                )}
                 <p className="text-gray-600 mb-2">Upload up to 5 photos</p>
                 <p className="text-xs text-gray-500 mb-4">JPG, PNG or GIF. 5MB max file size.</p>
-                <Button type="button" variant="outline" size="sm">Browse Files</Button>
-                <input type="file" className="hidden" accept="image/*" multiple />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleBrowseClick}
+                >
+                  Browse Files
+                </Button>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*" 
+                  multiple 
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
               </div>
               
               {/* Title */}

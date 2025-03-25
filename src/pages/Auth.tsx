@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,12 +17,18 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   
-  // Get the current pathname to determine if we're on sign-in or sign-up page
-  const isSignUp = window.location.pathname === "/signup";
+  const location = useLocation();
+  // Check if we're on the signup page
+  const isSignUp = location.pathname === "/signup";
   
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+
+  // Set the page title based on the current route
+  useEffect(() => {
+    document.title = isSignUp ? "Sign Up - CampusMarket" : "Sign In - CampusMarket";
+  }, [isSignUp]);
 
   const validateEmail = (email: string) => {
     if (userType === "admin" && !email.endsWith("@kgisl.ac.in")) {
