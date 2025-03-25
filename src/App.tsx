@@ -12,6 +12,7 @@ import Favorites from "./pages/Favorites";
 import Notifications from "./pages/Notifications";
 import Chat from "./pages/Chat";
 import Auth from "./pages/Auth";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
@@ -36,6 +37,11 @@ const App = () => (
                 <Route path="/" element={
                   <ProtectedRoute>
                     <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminDashboard />
                   </ProtectedRoute>
                 } />
                 <Route path="/product/:id" element={

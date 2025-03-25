@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -32,7 +31,7 @@ const categories = [
 
 // Create a new product ID (normally this would be handled by the backend)
 const generateProductId = () => {
-  return Math.floor(1000 + Math.random() * 9000);
+  return Math.random().toString(36).substr(2, 9);
 };
 
 // Get the current date in a readable format
@@ -86,32 +85,47 @@ const SellItem = () => {
   };
 
   const onSubmit = (data: any) => {
-    // Create a new product object
-    const newProduct = {
-      id: generateProductId(),
-      title: data.title,
-      price: parseFloat(data.price),
-      image: imagePreview || "https://images.unsplash.com/photo-1615212139852-a08fe8c5ebcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
-      location: data.location,
-      date: getCurrentDate(),
-      category: data.category,
-      description: data.description,
-      condition: data.condition
-    };
+    try {
+      // Create a new product object
+      const newProduct = {
+        id: generateProductId(),
+        title: data.title,
+        price: parseFloat(data.price),
+        image: imagePreview || "https://images.unsplash.com/photo-1615212139852-a08fe8c5ebcb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+        location: data.location,
+        date: getCurrentDate(),
+        category: data.category,
+        description: data.description,
+        condition: data.condition
+      };
 
-    // In a real application, we would save this to a database
-    // For now, let's simulate this by storing in localStorage
-    const recentProducts = JSON.parse(localStorage.getItem('recentProducts') || '[]');
-    recentProducts.unshift(newProduct); // Add to the beginning of the array
-    localStorage.setItem('recentProducts', JSON.stringify(recentProducts));
+      // In a real application, we would save this to a database
+      // For now, let's simulate this by storing in localStorage
+      const existingProducts = JSON.parse(localStorage.getItem('recentProducts') || '[]');
+      
+      // Add the new product to the beginning of the array
+      const updatedProducts = [newProduct, ...existingProducts];
+      
+      // Limit the number of products to prevent storage quota errors
+      const limitedProducts = updatedProducts.slice(0, 20);
+      
+      localStorage.setItem('recentProducts', JSON.stringify(limitedProducts));
 
-    toast({
-      title: "Item Listed Successfully",
-      description: "Your item has been listed for sale and will appear on the home page.",
-    });
+      toast({
+        title: "Item Listed Successfully",
+        description: "Your item has been listed for sale and will appear on the home page.",
+      });
 
-    // Navigate back to home page
-    navigate('/');
+      // Navigate back to home page
+      navigate('/');
+    } catch (error) {
+      console.error("Error saving product:", error);
+      toast({
+        title: "Error Listing Item",
+        description: "There was a problem listing your item. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
