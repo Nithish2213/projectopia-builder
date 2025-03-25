@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 type UserType = "student" | "admin";
 
@@ -20,6 +21,7 @@ const Auth = () => {
   
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const validateEmail = (email: string) => {
     if (userType === "admin" && !email.endsWith("@kgisl.ac.in")) {
@@ -44,14 +46,23 @@ const Auth = () => {
       return;
     }
 
-    // Mock authentication - in a real app, this would connect to a backend
+    // Create user object
+    const user = {
+      name: name || email.split('@')[0], // Use email username if name is not provided
+      email,
+      userType,
+    };
+
+    // Login the user
+    login(user);
+    
     toast({
       title: activeTab === "sign-in" ? "Signed In Successfully" : "Signed Up Successfully",
       description: `Welcome as a ${userType}!`,
     });
     
     // Navigate to home page after successful authentication
-    setTimeout(() => navigate("/"), 1500);
+    navigate("/");
   };
 
   return (

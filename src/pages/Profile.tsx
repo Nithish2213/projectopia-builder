@@ -6,14 +6,10 @@ import { Settings, LogOut, ShoppingBag, Heart, MessageSquare } from "lucide-reac
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { useAuth } from "@/context/AuthContext";
 
-// Mock user data
-const userData = {
-  name: "Alex Johnson",
-  email: "alex.johnson@university.edu",
-  avatar: "https://i.pravatar.cc/150?img=11",
-  joinedDate: "August 2022",
-  location: "Engineering Building",
+// Mock user data for listings and favorites
+const mockUserData = {
   listings: [
     {
       id: 1,
@@ -53,6 +49,20 @@ const userData = {
 };
 
 const Profile = () => {
+  const { user, logout } = useAuth();
+  
+  // Get the current date in "Month YYYY" format for joined date
+  const joinedDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  
+  // Generate avatar placeholder using user initials
+  const getUserInitials = () => {
+    if (!user || !user.name) return "U";
+    return user.name.split(' ').map(name => name[0]).join('').toUpperCase();
+  };
+  
+  // Generate random avatar URL based on user email
+  const avatarUrl = user ? `https://i.pravatar.cc/150?u=${encodeURIComponent(user.email)}` : "https://i.pravatar.cc/150";
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -60,26 +70,47 @@ const Profile = () => {
       <main className="flex-grow container mx-auto px-4 py-6">
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center">
-            <img 
-              src={userData.avatar} 
-              alt={userData.name}
-              className="w-24 h-24 rounded-full object-cover mb-4 md:mb-0 md:mr-6"
-            />
-            <div>
-              <h1 className="text-2xl font-bold">{userData.name}</h1>
-              <p className="text-gray-600">{userData.email}</p>
-              <p className="text-sm text-gray-500">Member since {userData.joinedDate}</p>
-              <div className="mt-3 flex space-x-3">
-                <Button size="sm" variant="outline" className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
-                <Button size="sm" variant="outline" className="flex items-center text-red-600 hover:text-red-700 hover:bg-red-50">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </div>
-            </div>
+            {user ? (
+              <>
+                <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl font-bold mb-4 md:mb-0 md:mr-6 overflow-hidden">
+                  <img 
+                    src={avatarUrl} 
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '';
+                      e.currentTarget.parentElement!.textContent = getUserInitials();
+                    }}
+                  />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold">{user.name}</h1>
+                  <p className="text-gray-600">{user.email}</p>
+                  <p className="text-sm text-gray-500">Member since {joinedDate}</p>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {user.userType === 'admin' ? 'Administrator' : 'Student'}
+                  </p>
+                  <div className="mt-3 flex space-x-3">
+                    <Button size="sm" variant="outline" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Edit Profile
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex items-center text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={logout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div>Loading user information...</div>
+            )}
           </div>
         </div>
         
@@ -101,9 +132,9 @@ const Profile = () => {
           
           <TabsContent value="listings">
             <h2 className="text-xl font-semibold mb-4">My Listings</h2>
-            {userData.listings.length > 0 ? (
+            {mockUserData.listings.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {userData.listings.map(listing => (
+                {mockUserData.listings.map(listing => (
                   <ProductCard key={listing.id} {...listing} />
                 ))}
               </div>
@@ -120,9 +151,9 @@ const Profile = () => {
           
           <TabsContent value="favorites">
             <h2 className="text-xl font-semibold mb-4">Favorites</h2>
-            {userData.favorites.length > 0 ? (
+            {mockUserData.favorites.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {userData.favorites.map(favorite => (
+                {mockUserData.favorites.map(favorite => (
                   <ProductCard key={favorite.id} {...favorite} />
                 ))}
               </div>
