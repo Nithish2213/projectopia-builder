@@ -8,17 +8,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useNotifications } from "@/context/NotificationsContext";
 
-interface Message {
-  id: number;
-  text: string;
-  sender: 'user' | 'seller';
-  timestamp: string;
-}
-
 const Chat = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState([
     {
       id: 1,
       text: "Hi, I'm interested in your MacBook. Is it still available?",
@@ -45,7 +38,7 @@ const Chat = () => {
     }
   ]);
   const { addNotification } = useNotifications();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -61,7 +54,7 @@ const Chat = () => {
     const newMessage = {
       id: messages.length + 1,
       text: message,
-      sender: 'user' as const,
+      sender: 'user',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
@@ -73,7 +66,7 @@ const Chat = () => {
       title: "New message sent",
       message: `You sent a message about MacBook Air`,
       date: "Just now",
-      type: "update" // Adding the required type property
+      type: "update"
     });
     
     // Mock seller response after a short delay
@@ -81,7 +74,7 @@ const Chat = () => {
       const sellerResponse = {
         id: messages.length + 2,
         text: "Thanks for your message! I'll get back to you soon.",
-        sender: 'seller' as const,
+        sender: 'seller',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, sellerResponse]);
@@ -91,12 +84,12 @@ const Chat = () => {
         title: "New message received",
         message: `Alex Johnson has replied to your message`,
         date: "Just now",
-        type: "update" // Adding the required type property
+        type: "update"
       });
     }, 1000);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }

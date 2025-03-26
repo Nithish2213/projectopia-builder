@@ -3,12 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  adminOnly?: boolean;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = false }) => {
+const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 

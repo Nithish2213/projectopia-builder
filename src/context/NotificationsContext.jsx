@@ -2,32 +2,10 @@
 import React, { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
 
-export type NotificationType = "trending" | "update" | "system";
-
-export interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  date: string;
-  read: boolean;
-  type: NotificationType;
-  itemId?: number; // Optional item ID for trending notifications
-  image?: string; // Optional image URL
-}
-
-interface NotificationsContextType {
-  notifications: Notification[];
-  markAsRead: (id: number) => void;
-  markAllAsRead: () => void;
-  unreadCount: number;
-  addNotification: (notification: Omit<Notification, "id" | "read">) => void;
-  clearNotification: (id: number) => void;
-}
-
-const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
+const NotificationsContext = createContext(undefined);
 
 // Sample notification data
-const sampleNotifications: Notification[] = [
+const sampleNotifications = [
   {
     id: 1,
     title: "New trending item!",
@@ -92,10 +70,10 @@ const sampleNotifications: Notification[] = [
   },
 ];
 
-export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>(sampleNotifications);
+export const NotificationsProvider = ({ children }) => {
+  const [notifications, setNotifications] = useState(sampleNotifications);
 
-  const markAsRead = (id: number) => {
+  const markAsRead = (id) => {
     setNotifications((prev) =>
       prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
     );
@@ -106,7 +84,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
     toast.success("All notifications marked as read");
   };
 
-  const addNotification = (notification: Omit<Notification, "id" | "read">) => {
+  const addNotification = (notification) => {
     const newNotification = {
       ...notification,
       id: Date.now(),
@@ -116,7 +94,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
     toast.info(`New notification: ${notification.title}`);
   };
 
-  const clearNotification = (id: number) => {
+  const clearNotification = (id) => {
     setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
