@@ -1,5 +1,4 @@
 
-import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,14 +31,14 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/signup" element={<Auth />} />
+                <Route path="/forgot-password" element={<Auth />} />
                 <Route path="/" element={
                   <ProtectedRoute>
                     <Index />
                   </ProtectedRoute>
                 } />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/signup" element={<Auth />} />
-                <Route path="/forgot-password" element={<Auth />} />
                 <Route path="/admin" element={
                   <ProtectedRoute adminOnly={true}>
                     <AdminDashboard />

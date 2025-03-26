@@ -80,7 +80,7 @@ const Profile = () => {
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = '';
-                      e.currentTarget.parentElement.textContent = getUserInitials();
+                      e.currentTarget.parentElement!.textContent = getUserInitials();
                     }}
                   />
                 </div>
