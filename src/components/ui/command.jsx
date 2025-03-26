@@ -1,10 +1,10 @@
 
-import * as React from "react"
-import { Command as CommandPrimitive } from "cmdk"
-import { Search } from "lucide-react"
+import * as React from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const Command = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -17,8 +17,8 @@ const Command = React.forwardRef(
       {...props}
     />
   )
-)
-Command.displayName = CommandPrimitive.displayName
+);
+Command.displayName = CommandPrimitive.displayName;
 
 const CommandDialog = ({ children, ...props }) => {
   return (
@@ -29,8 +29,8 @@ const CommandDialog = ({ children, ...props }) => {
         </Command>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
 const CommandInput = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -46,9 +46,9 @@ const CommandInput = React.forwardRef(
       />
     </div>
   )
-)
+);
 
-CommandInput.displayName = CommandPrimitive.Input.displayName
+CommandInput.displayName = CommandPrimitive.Input.displayName;
 
 const CommandList = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -58,9 +58,9 @@ const CommandList = React.forwardRef(
       {...props}
     />
   )
-)
+);
 
-CommandList.displayName = CommandPrimitive.List.displayName
+CommandList.displayName = CommandPrimitive.List.displayName;
 
 const CommandEmpty = React.forwardRef(
   (props, ref) => (
@@ -70,9 +70,9 @@ const CommandEmpty = React.forwardRef(
       {...props}
     />
   )
-)
+);
 
-CommandEmpty.displayName = CommandPrimitive.Empty.displayName
+CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
 const CommandGroup = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -85,9 +85,9 @@ const CommandGroup = React.forwardRef(
       {...props}
     />
   )
-)
+);
 
-CommandGroup.displayName = CommandPrimitive.Group.displayName
+CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
 const CommandSeparator = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -97,8 +97,8 @@ const CommandSeparator = React.forwardRef(
       {...props}
     />
   )
-)
-CommandSeparator.displayName = CommandPrimitive.Separator.displayName
+);
+CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
 const CommandItem = React.forwardRef(
   ({ className, ...props }, ref) => (
@@ -111,9 +111,9 @@ const CommandItem = React.forwardRef(
       {...props}
     />
   )
-)
+);
 
-CommandItem.displayName = CommandPrimitive.Item.displayName
+CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 const CommandShortcut = ({
   className,
@@ -127,9 +127,9 @@ const CommandShortcut = ({
       )}
       {...props}
     />
-  )
-}
-CommandShortcut.displayName = "CommandShortcut"
+  );
+};
+CommandShortcut.displayName = "CommandShortcut";
 
 export {
   Command,
@@ -141,4 +141,4 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
-}
+};
