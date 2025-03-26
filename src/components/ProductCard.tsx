@@ -8,7 +8,16 @@ import { useFavorites } from "@/context/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/context/NotificationsContext";
 
-const ProductCard = ({
+interface ProductCardProps {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  location: string;
+  date: string;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({
   id,
   title,
   price,
@@ -21,7 +30,7 @@ const ProductCard = ({
   const { addNotification } = useNotifications();
   const favorite = isFavorite(id);
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     

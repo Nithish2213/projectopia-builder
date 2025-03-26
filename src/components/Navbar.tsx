@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useFavorites } from "@/context/FavoritesContext";
-import { useNotifications } from "@/context/NotificationsContext";
+import { useNotifications, NotificationType } from "@/context/NotificationsContext";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const NotificationIcon = ({ type }) => {
+const NotificationIcon = ({ type }: { type: NotificationType }) => {
   switch (type) {
     case "trending":
       return <TrendingUp className="h-5 w-5 text-orange-500" />;
@@ -26,7 +26,7 @@ const Navbar = () => {
   const { notifications, unreadCount, markAsRead, clearNotification, markAllAsRead } = useNotifications();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
-  const handleNotificationClick = (id) => {
+  const handleNotificationClick = (id: number) => {
     markAsRead(id);
   };
 

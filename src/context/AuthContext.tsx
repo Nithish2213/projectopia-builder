@@ -2,12 +2,27 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext(undefined);
+type UserType = "student" | "admin";
 
-export const AuthProvider = ({ children }) => {
+export interface User {
+  email: string;
+  name: string;
+  userType: UserType;
+}
+
+interface AuthContextType {
+  user: User | null;
+  login: (user: User) => void;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   // Check if user is already authenticated from localStorage
   useEffect(() => {
@@ -22,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [navigate]);
 
-  const login = (userData) => {
+  const login = (userData: User) => {
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(userData));

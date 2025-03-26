@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
+type UserType = "student" | "admin";
+
 const Auth = () => {
-  const [userType, setUserType] = useState("student");
+  const [userType, setUserType] = useState<UserType>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +30,7 @@ const Auth = () => {
     document.title = isSignUp ? "Sign Up - CampusMarket" : "Sign In - CampusMarket";
   }, [isSignUp]);
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     if (userType === "admin" && !email.endsWith("@kgisl.ac.in")) {
       return "Admin email must end with @kgisl.ac.in";
     }
@@ -38,7 +40,7 @@ const Auth = () => {
     return null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     const emailError = validateEmail(email);

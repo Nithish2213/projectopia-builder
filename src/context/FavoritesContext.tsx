@@ -1,10 +1,17 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const FavoritesContext = createContext(undefined);
+interface FavoritesContextType {
+  favorites: number[];
+  addToFavorites: (id: number) => void;
+  removeFromFavorites: (id: number) => void;
+  isFavorite: (id: number) => boolean;
+}
 
-export const FavoritesProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState(() => {
+const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+
+export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [favorites, setFavorites] = useState<number[]>(() => {
     const savedFavorites = localStorage.getItem("favorites");
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
@@ -13,17 +20,17 @@ export const FavoritesProvider = ({ children }) => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const addToFavorites = (id) => {
+  const addToFavorites = (id: number) => {
     if (!favorites.includes(id)) {
       setFavorites((prev) => [...prev, id]);
     }
   };
 
-  const removeFromFavorites = (id) => {
+  const removeFromFavorites = (id: number) => {
     setFavorites((prev) => prev.filter((itemId) => itemId !== id));
   };
 
-  const isFavorite = (id) => {
+  const isFavorite = (id: number) => {
     return favorites.includes(id);
   };
 
