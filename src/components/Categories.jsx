@@ -22,7 +22,7 @@ const Categories = () => {
   const [searchParams] = useSearchParams();
   const activeCategory = searchParams.get("category");
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = (category) => {
     navigate(`/?category=${category}`);
   };
 

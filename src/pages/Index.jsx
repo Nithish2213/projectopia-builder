@@ -7,16 +7,19 @@ import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
-// Interface for product data
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  location: string;
-  date: string;
-  category: string;
+// Mock data for product data
+// Example product structure
+/*
+{
+  id: number,
+  title: string,
+  price: number,
+  image: string,
+  location: string,
+  date: string,
+  category: string
 }
+*/
 
 // Mock data for trending products
 const trendingProductsData = [
@@ -148,7 +151,7 @@ const Index = () => {
       // Combine newly listed products with initial recent products
       // Avoid duplicates by checking IDs
       const existingIds = new Set(initialRecentProducts.map(p => p.id));
-      const newProducts = parsedProducts.filter((p: Product) => !existingIds.has(p.id));
+      const newProducts = parsedProducts.filter(p => !existingIds.has(p.id));
       
       setRecentProducts([...newProducts, ...initialRecentProducts]);
     }
